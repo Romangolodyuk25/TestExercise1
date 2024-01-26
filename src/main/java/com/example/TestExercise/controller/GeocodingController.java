@@ -31,7 +31,7 @@ public class GeocodingController {
     private final GeocodingService geocodingService;
 
     @PostMapping("/geocoding")
-    public List<CoordinatesDto> straightGeocoding(@RequestParam(defaultValue = "ru_RU") String language,
+    public CoordinatesDto straightGeocoding(@RequestParam(defaultValue = "ru_RU") String language,
                                                   @RequestParam String address) {
         log.info("Входные параметры lang - {}, address - {}", language, address);
         return geocodingService.encode(language, address);

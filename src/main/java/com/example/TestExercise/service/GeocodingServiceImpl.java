@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.ValidationException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,40 +34,31 @@ public class GeocodingServiceImpl implements GeocodingService {
     final private CashRepository cashRepository;
 
     @Override
-    public List<CoordinatesDto> encode(String language, String address) {
+    public CoordinatesDto encode(String language, String address) {
+        String[] position;
         checkValidationForEncode(address);
-        List<Cash> cashList = cashRepository.findByAddress(address);
-        if (cashList.size() != 0) {
-            log.info("Найдено {} количесвто совпадений в кэше ", cashList.size());
-            return cashList.stream()
-                    .map(c -> c.getCoordinates().split(","))
-                    .map(c -> new CoordinatesDto(c[0], c[1]))
-                    .collect(Collectors.toList());
+        Optional<Cash> receivedCash = cashRepository.findByAddress(address);
+
+        if (receivedCash.isPresent()) {
+            Cash cash = receivedCash.get();
+            position = cash.getCoordinates().split(",");
+        } else {
+            String url = PATH + API_KEY + "&lang=" + language + "&geocode=" + address;
+            RestTemplate restTemplate = new RestTemplate();
+
+            GeocoderResponse response = restTemplate.getForObject(url, GeocoderResponse.class);
+
+            if (response == null) {
+                throw new NoAnswerFoundException("no answer found");
+            }
+            position = response.getResponse().getGeoObjectCollection()
+                    .getFeatureMember().get(0).getGeoObject()
+                    .getPoint().getPos().split(" ");
+
+            Cash cash = new Cash(null, position[0] + "," + position[1], address);
+            cashRepository.save(cash);
         }
-
-        String url = PATH + API_KEY + "&lang=" + language + "&geocode=" + address;
-        RestTemplate restTemplate = new RestTemplate();
-
-        GeocoderResponse response = restTemplate.getForObject(url, GeocoderResponse.class);
-
-        if (response == null) {
-            throw new NoAnswerFoundException("no answer found");
-        }
-        List<String> result = response.getResponse().getGeoObjectCollection().getFeatureMember().stream()
-                .map(o -> o.getGeoObject().getPoint().getPos())
-                .collect(Collectors.toList());
-
-        List<CoordinatesDto> coordinatesDtos = result.stream()
-                .map(i -> i.split(" "))
-                .map(i -> new CoordinatesDto(i[0], i[1]))
-                .collect(Collectors.toList());
-
-        String lon = coordinatesDtos.get(0).getLongitude();
-        String lat = coordinatesDtos.get(0).getLatitude();
-        Cash cash = new Cash(null, lon + "," + lat, address);
-        cashRepository.save(cash);
-
-        return coordinatesDtos;
+        return new CoordinatesDto(position[0], position[1]);
     }
 
     @Override
@@ -99,7 +91,9 @@ public class GeocodingServiceImpl implements GeocodingService {
 
         for (AddressDto a : addressDtos) {
             Cash cash = new Cash(null, longitude + "," + latitude, a.getAddress());
-            cashRepository.save(cash);
+            if (cashRepository.findByAddress(a.getAddress()).isEmpty()) {
+                cashRepository.save(cash);
+            }
         }
         return addressDtos;
     }
@@ -109,7 +103,6 @@ public class GeocodingServiceImpl implements GeocodingService {
         if (address.isBlank() || address.isEmpty() || address.length() > 512) {
             throw new ValidationException("Ошибка валидации, неправильно передан address");
         }
-
     }
 
     private void checkValidationForDecode(String longitude, String latitude) {

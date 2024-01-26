@@ -18,7 +18,7 @@ public interface GeocodingService {
      * @return - возвращается список Дто Координат в которых отображены Широта
      * и Долгота адреса по коотрому происходило геокодирование
      */
-    List<CoordinatesDto> encode(String language, String address);
+    CoordinatesDto encode(String language, String address);
 
 
     /**
