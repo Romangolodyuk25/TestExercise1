@@ -6,7 +6,8 @@ import com.example.TestExercise.dto.CoordinatesDto;
 import java.util.List;
 
 /**
- *
+ * Интерфейс, имплементация которого будет исопльзоваться для реализации
+ * логики прямого геокодирования и обратного геокодирования
  */
 public interface GeocodingService {
 

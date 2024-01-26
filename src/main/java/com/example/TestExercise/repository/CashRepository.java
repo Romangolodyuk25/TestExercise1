@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Интерфейс, предзназначенный для взаимодействия с базой данных и осуществления CRUD операций
+ */
 @Repository
 public interface CashRepository extends JpaRepository<Cash, Long> {
     List<Cash> findByAddress(String address);

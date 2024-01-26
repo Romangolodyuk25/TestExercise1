@@ -3,6 +3,7 @@ package com.example.TestExercise.service;
 import com.example.TestExercise.dto.AddressDto;
 import com.example.TestExercise.dto.CoordinatesDto;
 import com.example.TestExercise.dto.GeocoderResponse;
+import com.example.TestExercise.exception.NoAnswerFoundException;
 import com.example.TestExercise.model.Cash;
 import com.example.TestExercise.repository.CashRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *
+ * Класс - сервис , в котором отражена бизнес логика работы с API
+ * имеет 2 статических поля
+ * 1 - Хранит в себе API - токен
+ * 2 - Хранит в себе полный путь для взаимодейсвтия с API
+ * Данный сервис реализует 2 метода encode и decode для прямого и обратного геокодирования
  */
 @Service
 @Slf4j
@@ -44,6 +49,9 @@ public class GeocodingServiceImpl implements GeocodingService {
 
         GeocoderResponse response = restTemplate.getForObject(url, GeocoderResponse.class);
 
+        if (response == null) {
+            throw new NoAnswerFoundException("no answer found");
+        }
         List<String> result = response.getResponse().getGeoObjectCollection().getFeatureMember().stream()
                 .map(o -> o.getGeoObject().getPoint().getPos())
                 .collect(Collectors.toList());
@@ -78,6 +86,9 @@ public class GeocodingServiceImpl implements GeocodingService {
 
         GeocoderResponse response = restTemplate.getForObject(url, GeocoderResponse.class);
 
+        if (response == null) {
+            throw new NoAnswerFoundException("no answer found");
+        }
         List<String> result = response.getResponse().getGeoObjectCollection().getFeatureMember().stream()
                 .map(s -> s.getGeoObject().getMetaDataProperty().getGeocoderMetaData().getText())
                 .collect(Collectors.toList());

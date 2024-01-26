@@ -5,7 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- *
+ * DTO объект, который является результатом прямого геокодирования
+ * предназначеный для того что бы вернуть пользователю ответ с долготой и широтой адреса
  */
 @Data
 @AllArgsConstructor

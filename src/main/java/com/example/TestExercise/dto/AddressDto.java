@@ -5,7 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- *
+ * DTO объект котоырй является рузультатом обратного геокодирования,
+ * предназначеный для того что бы вернуть пользователю информацию об адресе
  */
 @Data
 @NoArgsConstructor

@@ -6,7 +6,9 @@ import lombok.*;
 import java.util.ArrayList;
 
 /**
- *
+ * DTO объект - результат ответа сервера на запрос с адресом или координатами.
+ * Класс содержит в себе 7 inner-классов для выделения сущностей,
+ * которые неразрыно связаны с сущностю GeocoderResponse
  */
 @Data
 @NoArgsConstructor

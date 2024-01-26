@@ -15,7 +15,9 @@ import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-
+/**
+ * Класс-Обработчик, предназначенный для обработки исключений и передачи корректного ответа с определенныи статус кодом
+ */
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {

@@ -5,14 +5,22 @@ import com.example.TestExercise.dto.CoordinatesDto;
 import com.example.TestExercise.service.GeocodingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
+ * Контроллер с двумя едпоинтами
+ * 1. HTTP метод POST straightGeocoding с 2 параметрами:
+ * - String language, который по умолчанию равен - "ru_RU" для установки языка кодирования,
+ * - String address содержит в себе информацию об адресе для которого будет осуществялться геокодирование
+ * метод осуществляет прямое геокодирование(из адреса в долготу и широту)
  *
+ * 2. HTTP метод GET inverseConversion с 3 параметрами:
+ *  - String language, который по умолчанию равен - "ru_RU" для установки языка кодирования,
+ *  - String longitude содержит информацию о долготе адреса
+ *  - String latitude содержит информацию о широте адреса
+ *  метод осуществляет обратное геокодирования(из долготы и широты в адрес)
  */
 @RestController
 @RequiredArgsConstructor
