@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.validation.ValidationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ public class GeocodingServiceImpl implements GeocodingService {
 
     @Override
     public List<CoordinatesDto> encode(String language, String address) {
+        checkValidationForEncode(address);
         List<Cash> cashList = cashRepository.findByAddress(address);
         if (cashList.size() != 0) {
             log.info("Найдено {} количесвто совпадений в кэше ", cashList.size());
@@ -61,7 +63,7 @@ public class GeocodingServiceImpl implements GeocodingService {
 
     @Override
     public List<AddressDto> decode(String language, String longitude, String latitude) {
-
+        checkValidationForDecode(longitude, latitude);
         List<Cash> cashList = cashRepository.findByCoordinates(longitude + "," + latitude);
 
         if (cashList.size() != 0) {
@@ -90,4 +92,21 @@ public class GeocodingServiceImpl implements GeocodingService {
         }
         return addressDtos;
     }
+
+    private void checkValidationForEncode(String address) {
+        log.info("Параметр address {}", address);
+        if (address.isBlank() || address.isEmpty() || address.length() > 512) {
+            throw new ValidationException("Ошибка валидации, неправильно передан address");
+        }
+
+    }
+
+    private void checkValidationForDecode(String longitude, String latitude) {
+        log.info("Параметр longitude {}, latitude {}", longitude, latitude);
+        if (longitude.isEmpty() || longitude.isBlank() || longitude.length() > 16 ||
+                latitude.isBlank() || latitude.isEmpty() || latitude.length() > 16) {
+            throw new ValidationException("Ошибка валидации, неправильно передан longitude или latitude");
+        }
+    }
+
 }

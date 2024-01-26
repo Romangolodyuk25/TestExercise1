@@ -12,19 +12,20 @@ public interface GeocodingService {
 
     /**
      * прямое преобразование ИЗ АДРЕСА В ДОЛГОТУ И ШИРОТУ
-     * @param language
-     * @param address
-     * @return
+     * @param language - отображает язык на котором будет происходить обратное геокодирование
+     * @param address - отображает Адресс по которому будет происходить обратное геокодирование
+     * @return - возвращается список Дто Координат в которых отображены Широта
+     * и Долгота адреса по коотрому происходило геокодирование
      */
     List<CoordinatesDto> encode(String language, String address);
 
 
     /**
      * обратное преобразование ИЗ ШИРОТЫ И ДОЛГОТЫ В АДРЕС
-     * @param language
-     * @param latitude
-     * @param longitude
-     * @return
+     * @param language - отображает язык на котором будет происходить прямое геокодирование
+     * @param latitude - отображается широту
+     * @param longitude - отоброжает долготу
+     * @return - возвращается список Дто Адрессов в которых отображена информация об адрессе поиска
      */
     List<AddressDto> decode(String language, String longitude, String latitude);
 }
