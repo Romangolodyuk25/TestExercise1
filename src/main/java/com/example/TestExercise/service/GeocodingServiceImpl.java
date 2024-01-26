@@ -10,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +24,6 @@ public class GeocodingServiceImpl implements GeocodingService {
     private static final String API_KEY = "691c961c-4925-4cfc-831b-376aa904bd6c";
     private static final String PATH = "https://geocode-maps.yandex.ru/1.x/?format=json&sco=longlat&apikey=";
 
-    final private Map<String, String> cash = new HashMap<>();
     final private CashRepository cashRepository;
 
     @Override
@@ -45,7 +41,7 @@ public class GeocodingServiceImpl implements GeocodingService {
         RestTemplate restTemplate = new RestTemplate();
 
         GeocoderResponse response = restTemplate.getForObject(url, GeocoderResponse.class);
-        //сделать что бы работало не с 1 значением а со списком(убрать .get(0))
+
         List<String> result = response.getResponse().getGeoObjectCollection().getFeatureMember().stream()
                 .map(o -> o.getGeoObject().getPoint().getPos())
                 .collect(Collectors.toList());
@@ -74,11 +70,12 @@ public class GeocodingServiceImpl implements GeocodingService {
                     .map(c -> new AddressDto(c.getAddress()))
                     .collect(Collectors.toList());
         }
+
         String url = PATH + API_KEY + "&lang=" + language + "&geocode=" + longitude + "," + latitude;
         RestTemplate restTemplate = new RestTemplate();
 
         GeocoderResponse response = restTemplate.getForObject(url, GeocoderResponse.class);
-        //сделать что бы работало не с 1 значением а со списком(убрать .get(0))
+
         List<String> result = response.getResponse().getGeoObjectCollection().getFeatureMember().stream()
                 .map(s -> s.getGeoObject().getMetaDataProperty().getGeocoderMetaData().getText())
                 .collect(Collectors.toList());
@@ -87,11 +84,10 @@ public class GeocodingServiceImpl implements GeocodingService {
                 .map(AddressDto::new)
                 .collect(Collectors.toList());
 
-        for(AddressDto a : addressDtos) {
+        for (AddressDto a : addressDtos) {
             Cash cash = new Cash(null, longitude + "," + latitude, a.getAddress());
             cashRepository.save(cash);
         }
-
         return addressDtos;
     }
 }
