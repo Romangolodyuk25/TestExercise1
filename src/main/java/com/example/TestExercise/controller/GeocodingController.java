@@ -10,17 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * Контроллер с двумя едпоинтами
- * 1. HTTP метод POST straightGeocoding с 2 параметрами:
- * - String language, который по умолчанию равен - "ru_RU" для установки языка кодирования,
- * - String address содержит в себе информацию об адресе для которого будет осуществялться геокодирование
- * метод осуществляет прямое геокодирование(из адреса в долготу и широту)
- *
- * 2. HTTP метод GET inverseConversion с 3 параметрами:
- *  - String language, который по умолчанию равен - "ru_RU" для установки языка кодирования,
- *  - String longitude содержит информацию о долготе адреса
- *  - String latitude содержит информацию о широте адреса
- *  метод осуществляет обратное геокодирования(из долготы и широты в адрес)
+ * Контроллер для геокодинга
  */
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +20,12 @@ public class GeocodingController {
 
     private final GeocodingService geocodingService;
 
+    /**
+     * Кодирует адрес в координаты
+     * @param language который по умолчанию равен - "ru_RU" для установки языка кодирования,
+     * @param address содержит в себе информацию об адресе для которого будет осуществялться геокодирование
+     * @return координаты
+     */
     @PostMapping("/geocoding")
     public CoordinatesDto straightGeocoding(@RequestParam(defaultValue = "ru_RU") String language,
                                                   @RequestParam String address) {
@@ -37,6 +33,13 @@ public class GeocodingController {
         return geocodingService.encode(language, address);
     }
 
+    /**
+     * Декодирует координаты в адрес
+     * @param language который по умолчанию равен - "ru_RU" для установки языка кодирования,
+     * @param longitude содержит информацию о долготе адреса
+     * @param latitude содержит информацию о широте адреса
+     * @return
+     */
     @GetMapping("/geocoding")
     public List<AddressDto> inverseConversion(@RequestParam(defaultValue = "ru_RU") String language,
                                         @RequestParam String longitude,

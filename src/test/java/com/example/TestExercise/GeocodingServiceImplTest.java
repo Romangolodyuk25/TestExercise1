@@ -27,11 +27,10 @@ public class GeocodingServiceImplTest {
 
     @Test
     public void shouldBeEncode() {
-        List<CoordinatesDto> receivedCoordinatesDto = geocodingService.encode(language, address);
-        assertNotNull(receivedCoordinatesDto);
-        assertEquals(1, receivedCoordinatesDto.size());
-        assertEquals(receivedCoordinatesDto.get(0).getLatitude(), latitude);
-        assertEquals(receivedCoordinatesDto.get(0).getLongitude(), longitude);
+        CoordinatesDto receivedCoordinateDto = geocodingService.encode(language, address);
+        assertNotNull(receivedCoordinateDto);
+        assertEquals(receivedCoordinateDto.getLatitude(), latitude);
+        assertEquals(receivedCoordinateDto.getLongitude(), longitude);
     }
 
     @Test
